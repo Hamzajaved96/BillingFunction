@@ -1,55 +1,50 @@
-
-using System.Net;
-using System.Net.Http.Headers;
 using Azure.Core;
 using Azure.Identity;
 using Azure.ResourceManager;
-using Azure.ResourceManager.Resources;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using System.Net;
 
 namespace BillingFunction
 {
-	public class GetBillingInfoByResourceId
-	{
+    public class GetBillingInformationByResouceId
+    {
+        private readonly ILogger<GetBillingInformationByResouceId> _logger;
 
 		private static readonly HttpClient _httpClient = new HttpClient();
 
-		public GetBillingInfoByResourceId()
-		{
-		}
+		public GetBillingInformationByResouceId(ILogger<GetBillingInformationByResouceId> logger)
+        {
+            _logger = logger;
+        }
 
-		[Function("GetBillingPeriods")]
+        [Function("GetBillingInformationByResouceId")]
 		public async Task<HttpResponseData> Run(
 			[HttpTrigger(AuthorizationLevel.Function, "get", Route = "billing/periods")] HttpRequestData req)
 		{
 
 
 			var queryParams = System.Web.HttpUtility.ParseQueryString(req.Url.Query);
-			string subscriptionId = queryParams["subscriptionId"]; // Get the subscriptionId from query params
+			string resourceId = queryParams["reourceId"]; // Get the subscriptionId from query params
 
-			if (string.IsNullOrEmpty(subscriptionId))
+			if (string.IsNullOrEmpty(resourceId))
 			{
 				var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-				await errorResponse.WriteStringAsync("Error: Subscription ID is missing.");
+				await errorResponse.WriteStringAsync("Error: reourceId ID is missing.");
 				return errorResponse;
 			}
 
 
-			//string subscriptionId = "529c15e0-232e-4ca7-81de-40ef39cfedc2";
 			string apiVersion = "2022-10-01-";
 			// give your billingAcccount nubmer or you can get programiticaly from api or sdk
 			string billingAccountName = "00000000-00000000-4abe-0000000000:70e961e7-4c17-4131-8301-00000000_2019-05-31";
 
 
-			string endpoint = $"https://management.azure.com/providers/Microsoft.Billing" +
-				$"/billingAccounts/{billingAccountName}/billingSubscriptions/{subscriptionId}?api-version={apiVersion}" +
-				$"privatepreview&excludeCharges=true&includeDeleted=true";
 
-
-			//	string endpoint = "https://management.azure.com/providers/Microsoft.Billing/billingAccounts?api-version=2020-05-01";
-
+			string endpoint = "end point for billing data against resource id";
 
 			try
 			{
@@ -99,6 +94,6 @@ namespace BillingFunction
 				return errorResponse;
 			}
 		}
-	
+
 	}
 }
